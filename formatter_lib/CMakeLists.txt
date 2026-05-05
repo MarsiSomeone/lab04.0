@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.5)
+
+project(formatter)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+file(GLOB SOURCES "*.cpp")
+
+add_library(formatter STATIC formatter.cpp)
+
+target_include_directories(formatter PUBLIC formatter_lib)
+
+
+

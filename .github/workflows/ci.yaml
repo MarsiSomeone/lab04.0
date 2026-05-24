@@ -1,4 +1,4 @@
-name: CI
+version: 1.0
 
 on:
   workflow_dispatch: {}
@@ -6,28 +6,44 @@ on:
 env:
   BUILD_TYPE: Release
 
+matrix:
+  - os: linux
+    compiler: gcc
+  - os: linux
+    compiler: clang
+  - os: windows
+    compiler: msvc
+
 jobs:
   build-and-test:
     strategy:
       matrix:
         include:
-          - os: linux-latest
+          - os: linux
             compiler: gcc
-          - os: linux-latest
+          - os: linux
             compiler: clang
-          - os: windows-latest
+          - os: windows
             compiler: msvc
 
     runs-on: ${{ matrix.os }}
-    
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Configure
-        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
-      
-      - name: Build
-        run: cmake --build build --config ${{ env.BUILD_TYPE }}
-      
-      - name: Test
-        run: ctest --test-dir build --output-on-failure -C ${{ env.BUILD_TYPE }}
+
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_STANDARD=11
+
+      - name: Build Project
+        run: |
+          cd build
+          cmake --build . --config $BUILD_TYPE
+
+      - name: Run Tests
+        run: |
+          cd build
+          ctest --output-on-failure -C $BUILD_TYPE

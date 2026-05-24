@@ -11,40 +11,23 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: linux-latest
             compiler: gcc
-            cxx: g++
-            cc: gcc
-          - os: ubuntu-latest
+          - os: linux-latest
             compiler: clang
-            cxx: clang++
-            cc: clang
           - os: windows-latest
             compiler: msvc
-            cxx: cl
-            cc: cl
 
     runs-on: ${{ matrix.os }}
     
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
-
-      - name: Configure CMake
-        run: |
-          mkdir build
-          cd build
-          cmake .. -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_CXX_STANDARD=11
-        shell: bash
-
-      - name: Build Project
-        run: |
-          cd build
-          cmake --build . --config ${{ env.BUILD_TYPE }}
-        shell: bash
-
-      - name: Run Tests
-        run: |
-          cd build
-          ctest --output-on-failure -C ${{ env.BUILD_TYPE }}
-        shell: bash
+      - uses: actions/checkout@v4
+      
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+      
+      - name: Build
+        run: cmake --build build --config ${{ env.BUILD_TYPE }}
+      
+      - name: Test
+        run: ctest --test-dir build --output-on-failure -C ${{ env.BUILD_TYPE }}

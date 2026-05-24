@@ -1,0 +1,13 @@
+_build/
+build/
+cmake-build-*/
+*.user
+**/CMakeFiles/
+**/cmake_install.cmake
+**/Makefile
+**/*.a
+**/*.so
+**/*.o
+**/*.d
+.vscode/
+.idea/
